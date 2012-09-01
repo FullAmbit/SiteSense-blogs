@@ -7,4 +7,4 @@ SiteSense-blogs
  - Tags: blog, blogs, blogging, 
  - Requires: Pre-Alpha
  - Tested up to: 0.1
- - License URI: https://raw.github.com/FullAmbit/SiteSense/development/LICENSE.txt
+ - License URI: https://raw.github.com/FullAmbit/SiteSense/master/LICENSE.txt
