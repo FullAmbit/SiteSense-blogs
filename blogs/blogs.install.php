@@ -25,7 +25,8 @@
 function blogs_settings() {
 	return array(
 		'name'      => 'blogs',
-		'shortName' => 'blogs'
+		'shortName' => 'blogs',
+		'version'   => '1.0'
 	);
 }
 function blogs_install($db, $drop=false, $firstRun=false, $lang='en_us') {
