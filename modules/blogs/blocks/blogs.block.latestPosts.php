@@ -16,7 +16,7 @@ function latestPosts_content($data,$attributes) {
 	foreach($data->output['postList'] as $postItem) {
 		echo '
 			<h3 class="link">
-        <a href="',$data->linkRoot,(isset($attributes[1])) ? $attributes[1] : $data->settings['defaultBlog'],'/',$postItem['shortName'],'">',$postItem['title'],'</a>
+        <a href="',$data->linkHome,'blogs/',(isset($attributes[1])) ? $attributes[1] : $data->settings['defaultBlog'],'/',$postItem['shortName'],'">',$postItem['title'],'</a>
         <b></b>
       </h3>
 			';
