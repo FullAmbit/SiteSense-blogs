@@ -9,7 +9,7 @@ function categories_content($data,$attributes) {
                 <b></b>Subscribe
                 <i><!-- hover state precache --></i>
             </span>
-        </a></div><h2>Blog Categories</h2>';
+        </a></div><h2>Topics</h2>';
     if(!empty($data->output['blogCategoryList'])){
         echo '<ul>';
         foreach($data->output['blogCategoryList'] as $categoryItem) {
