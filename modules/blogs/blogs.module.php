@@ -77,12 +77,12 @@ function blogs_buildContent($data, $db) {
 	if ($data->action[2]=='rss') {
 		// Content Type
 		//$data->httpHeaders=NULL;
-		$data->pageSettings['httpHeaders'][0]='Content-Type: application/xml';
+		$data->httpHeaders[]='Content-Type: application/xml';
 		// Get Blog Info
 		$statement=$db->prepare('getBlogById', 'blogs');
 		$statement->execute(array(
 				':blogId' => $data->action[1]
-			));
+		));
 		$data->output['blogItem']=$statement->fetch();
 
 		// Get All Posts In Blog
@@ -203,7 +203,7 @@ function blogs_buildContent($data, $db) {
 }
 function blogs_content($data) {
 	// If RSS Feed Skip All This
-	if ($data->pageSettings['httpHeaders'][0]=='Content-Type: application/xml') {
+	if ($data->action[2]=='rss') {
 		theme_blogRSSFeed($data);
 		die;
 	} else {
