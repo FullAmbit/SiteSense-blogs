@@ -56,7 +56,7 @@ function blogs_buildContent($data, $db) {
 		return;
 	}
 	$data->output['pageShortName']=$data->output['blogInfo']['shortName'];
-	$data->output['pageTitle']=ucwords($data->output['blogInfo']['name']);
+	$data->output['pageTitle']=ucwords($data->output['blogInfo']['title']);
 	// Get All Blog Categories
 	$statement=$db->prepare('getAllCategoriesByBlogId', 'blogs');
 	$statement->execute(array(
@@ -74,9 +74,8 @@ function blogs_buildContent($data, $db) {
 		: 'blogs/'.$data->output['blogInfo']['shortName']);
 	$data->output['rssLink']=isset($data->output['blogInfo']['rssOverride']{1}) ? $data->output['blogInfo']['rssOverride'] : $data->localRoot.'/rss';
 	// If RSS Feed Skip All This
-	if ($data->action[2]=='rss') {
+	if ($data->action[2]==='rss') {
 		// Content Type
-		//$data->httpHeaders=NULL;
 		$data->httpHeaders[]='Content-Type: application/xml';
 		// Get Blog Info
 		$statement=$db->prepare('getBlogById', 'blogs');
@@ -84,14 +83,12 @@ function blogs_buildContent($data, $db) {
 				':blogId' => $data->action[1]
 		));
 		$data->output['blogItem']=$statement->fetch();
-
 		// Get All Posts In Blog
 		$statement=$db->prepare('getBlogPostsByParentBlog', 'blogs');
 		$statement->execute(array(
 				':blogId' => $data->action[1]
 			));
 		$data->output['postsList']=$statement->fetchAll();
-
 		// Get All Categories in Blog
 		$statement=$db->prepare('getAllCategoriesByBlogId', 'blogs');
 		$statement->execute(array(':blogId' => $data->action[1]));
@@ -202,8 +199,7 @@ function blogs_buildContent($data, $db) {
 	}
 }
 function blogs_content($data) {
-	// If RSS Feed Skip All This
-	if ($data->action[2]=='rss') {
+	if ($data->action[2]==='rss') {
 		theme_blogRSSFeed($data);
 		die;
 	} else {
@@ -215,4 +211,3 @@ function blogs_content($data) {
 		blogs_common_pageContent($data, false, $pagination, $data->output['summarize']);
 	}
 }
-?>
