@@ -64,6 +64,7 @@ function languages_blogs_admin_en_us(){
 		'noCommentsPending'                     => 'No comments are awaiting approval.',
 		'noCommentsApproved'                    => 'No comments have been approved for this post.',
 		'noCommentsDisapproved'                 => 'No comments have been disapproved for this post.',
+		'noPostsExist'                          => 'No posts exist for this blog.',
 		'addNewPost'                            => 'Add New Post',
 		'managePostsHeading'                    => 'Manage Posts',
 		'dateCreated'                           => 'Date Created',
@@ -129,4 +130,3 @@ function languages_blogs_admin_en_us(){
 		'captionEditPost'                       => 'Edit Post'
 	);
 }
-?>

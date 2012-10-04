@@ -352,7 +352,7 @@ function theme_blogsListPostsHead($data,$aRoot) {
 
 function theme_blogsListPostsNoPosts($data) {
 	echo '
-		<p class="blogPostsListNoBlogPosts">',$data->phrases['noPostsExist'],'</p>';
+		<p class="blogPostsListNoBlogPosts">',$data->phrases['blogs']['noPostsExist'],'</p>';
 }
 
 function theme_blogsListsPostsTableHead($data) {
