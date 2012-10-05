@@ -38,7 +38,7 @@ function theme_blogSummaryBox($data, $blogPost, $localRoot, $headingLevel=2) {
 		$blogPost['postTime'],
 		$headingLevel
 	);
-	$blogPost['summary']=htmlspecialchars_decode(common_parseDynamicValues($data,$blogPost['parsedSummary']));
+	$blogPost['summary']=html_entity_decode(common_parseDynamicValues($data,$blogPost['parsedSummary']),ENT_QUOTES,'UTF-8');
 	
 	$noWrapper=theme_noWrapper($blogPost['summary']);
 	if($noWrapper) echo '<div class="forceDiv">';
@@ -61,7 +61,7 @@ function theme_blogDisplayBox($data, $blogPost, $localRoot, $headingLevel=2) {
 		$blogPost['postTime'],
 		$headingLevel
 	);
-	$blogPost['content']=htmlspecialchars_decode(common_parseDynamicValues($data,$blogPost['parsedContent']));
+	$blogPost['content']=html_entity_decode(common_parseDynamicValues($data,$blogPost['parsedContent']),ENT_QUOTES,'UTF-8');
 	$noWrapper=theme_noWrapper($blogPost['content']);
 	if($noWrapper) echo '<div class="forceDiv">';
 	echo $blogPost['content'];

@@ -172,7 +172,7 @@ function blogs_buildContent($data, $db) {
 							}
 							$data->output['commentForm']->sendArray[':parsedContent']=$data->plugins['bbcode']->parse($data->output['commentForm']->sendArray[':rawContent']);
 						} else {
-							$data->output['commentForm']->sendArray[':parsedContent']=htmlspecialchars($data->output['commentForm']->sendArray[':rawContent']);
+							$data->output['commentForm']->sendArray[':parsedContent']=htmlentities($data->output['commentForm']->sendArray[':rawContent'],ENT_QUOTES,'UTF-8');
 						}
 						// Remove subscriptions; not stored in our database
 						unset($data->output['commentForm']->sendArray[':subscription']);

@@ -78,7 +78,7 @@ function admin_blogsBuild($data,$db) {
 			}
 		
 			//--Various Parsing--//
-			$data->output['blogForm']->sendArray[':title']=htmlspecialchars($data->output['blogForm']->sendArray[':title']);
+			$data->output['blogForm']->sendArray[':title']=htmlentities($data->output['blogForm']->sendArray[':title'],ENT_QUOTES,'UTF-8');
 			
 			if($data->settings['useBBCode']=='1') {
 				common_loadPlugin($data,'bbcode');
@@ -138,4 +138,3 @@ function admin_blogsShow($data) {
 		theme_buildForm($data->output['blogForm']);
 	}
 }
-?>
