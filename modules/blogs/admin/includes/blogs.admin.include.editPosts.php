@@ -124,7 +124,7 @@ function admin_blogsBuild($data,$db) {
 			$statement=$db->prepare('updateBlogPostsById','admin_blogs');
 			$data->output['blogForm']->sendArray[':id']=$data->action[4];
 			// HTML Special Chars
-			$data->output['blogForm']->sendArray[':title']=htmlspecialchars($data->output['blogForm']->sendArray[':title']);
+			$data->output['blogForm']->sendArray[':title']=htmlentities($data->output['blogForm']->sendArray[':title'],ENT_QUOTES,'UTF-8');
 			if($data->settings['useBBCode']=='1') {
 				common_loadPlugin($data,'bbcode');
 				$data->output['blogForm']->sendArray[':parsedContent']=$data->plugins['bbcode']->parse($data->output['blogForm']->sendArray[':rawContent']);
@@ -173,4 +173,3 @@ function admin_blogsShow($data) {
 		theme_buildForm($data->output['blogForm']);
 	}
 }
-?>

@@ -64,7 +64,7 @@ function admin_blogsBuild($data, $db) {
 					common_loadPlugin($data, 'bbcode');
 					$data->output['commentItemForm']->sendArray[':parsedContent']=$data->plugins['bbcode']->parse($data->output['commentItemForm']->sendArray[':rawContent']);
 				} else {
-					$data->output['commentItemForm']->sendArray[':parsedContent']=htmlspecialchars($data->output['commentItemForm']->sendArray[':rawContent']);
+					$data->output['commentItemForm']->sendArray[':parsedContent']=htmlentities($data->output['commentItemForm']->sendArray[':rawContent'],ENT_QUOTES,'UTF-8');
 				}
 				// SQL Save Statement
 				$statement=$db->prepare('editCommentById', 'admin_blogs');
@@ -97,4 +97,3 @@ function admin_blogsShow($data) {
 		theme_buildForm($data->output['commentItemForm']);
 	}
 }
-?>
