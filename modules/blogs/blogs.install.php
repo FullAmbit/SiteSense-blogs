@@ -166,14 +166,8 @@ function blogs_install($db, $drop=false, $firstRun=false, $lang='en_us') {
 				'blogs_access',
 				'blogs_accessOthers',
 
-				'blogs_blogAdd',
-				'blogs_blogEdit',
-				'blogs_blogDelete',
 				'blogs_blogList',
 
-				'blogs_categoryAdd',
-				'blogs_categoryEdit',
-				'blogs_categoryDelete',
 				'blogs_categoryView',
 
 				'blogs_commentAdd',
@@ -183,9 +177,6 @@ function blogs_install($db, $drop=false, $firstRun=false, $lang='en_us') {
 				'blogs_commentDisapprove',
 				'blogs_commentList',
 
-				'blogs_postAdd',
-				'blogs_postEdit',
-				'blogs_postDelete',
 				'blogs_postList'
 
 			),
@@ -214,7 +205,6 @@ function blogs_install($db, $drop=false, $firstRun=false, $lang='en_us') {
 				'blogs_postDelete',
 				'blogs_postList'
 			),
-
 		);
 		foreach ($defaultPermissionGroups as $groupName => $permissions) {
 			foreach ($permissions as $permissionName) {
