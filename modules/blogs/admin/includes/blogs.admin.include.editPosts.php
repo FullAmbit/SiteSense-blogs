@@ -85,7 +85,7 @@ function admin_blogsBuild($data,$db) {
 					$item[$key] ? 'checked' : ''
 				);
 			} else {
-				$data->output['blogForm']->fields[$key]['value']=html_entity_decode($item[$key]);
+				$data->output['blogForm']->fields[$key]['value']=html_entity_decode($item[$key],ENT_QUOTES,'UTF-8');
 			}
 		}
 	} else {
