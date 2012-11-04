@@ -79,7 +79,7 @@ function theme_blogDisplayBox($data, $blogPost, $localRoot, $headingLevel=2) {
 		theme_displayComments($blogPost['comments']);
 	}
 	if(isset($data->output['commentForm']) && ($data->output['blogInfo']['commentsRequireLogin']==0 || isset($data->user['id']))) {
-		theme_buildForm($data->output['commentForm']);
+		$data->output['commentForm']->build();
 	}else if(isset($data->output['commentSuccess'])) {
 		echo '<p class="commentSuccess">Thank you for your comment</p>';
 	}
