@@ -74,9 +74,7 @@ function blogs_buildContent($data, $db) {
 		: 'blogs/'.$data->output['blogInfo']['shortName']);
 	$data->output['rssLink']=isset($data->output['blogInfo']['rssOverride']{1}) ? $data->output['blogInfo']['rssOverride'] : $data->localRoot.'/rss';
 	// If RSS Feed Skip All This
-	if ($data->action[2]==='rss') {
-		// Content Type
-		header('Content-type: application/rss+xml; charset=UTF-8');
+	if ($data->action[2]==='rss'||$data->action[2]==='atom') {
 		// Get Blog Info
 		$statement=$db->prepare('getBlogById', 'blogs');
 		$statement->execute(array(
@@ -96,30 +94,52 @@ function blogs_buildContent($data, $db) {
 		foreach ($catList as $catItem) {
 			$data->output['rssCategoryList'][$catItem['id']]=$catItem;
 		}
-		$xml=new SimpleXMLElement('<rss version="2.0"></rss>');
-		$xml->addChild('channel');
-		$xml->channel->addChild('title',(empty($data->output['blogItem']['title'])?$data->output['blogItem']['name']:$data->output['blogItem']['title']));
-		$xml->channel->addChild('description',$data->output['blogItem']['description']);
-		$xml->channel->addChild('link',$data->domainName.$data->linkRoot.'/blogs/'.$data->output['blogItem']['id']);
-		$xml->channel->addChild('pubDate',date(DATE_RSS));
-		$xml->channel->addChild('generator','SiteSense '.$data->version);
+		// build RSS or Atom feed
+		if($data->action[2]==='rss'){ // RSS
+			header('Content-type: application/rss+xml; charset=UTF-8');
+			$xml=new SimpleXMLElement('<rss version="2.0"><channel></channel></rss>');
+			$root=$xml->channel;
+			$root->addChild('title',(empty($data->output['blogItem']['title'])?$data->output['blogItem']['name']:$data->output['blogItem']['title']));
+			$root->addChild('description',$data->output['blogItem']['description']);
+			$root->addChild('link',$data->domainName.$data->linkRoot.'/blogs/'.$data->output['blogItem']['id']);
+			$root->addChild('pubDate',date(DATE_RSS));
+			$root->addChild('generator','SiteSense '.$data->version);
+			foreach($data->output['postsList'] as $post){
+				$item=$root->addChild('item');
+				$item->addChild('title',$post['title']);
+				$item->addChild('description',$post['rawSummary']);
+				$item->addChild('link',$data->domainName.$data->linkRoot.'/blogs/'.$data->output['blogItem']['id'].'/'.$post['shortName']);
+				$item->addChild('guid',bin2hex($post['id']));
+				$item->addChild('pubDate',date(DATE_RSS,$post['postTime']));
+				if(!empty($post['categoryId'])){
+					$item->addChild('category',$data->output['rssCategoryList'][$post['categoryId']]['name']);
+					$item->category->addAttribute('domain',$data->domainName.$data->linkRoot.'/blogs/'.$data->output['blogItem']['id'].'/categories/'.$data->output['rssCategoryList'][$post['categoryId']]['shortName']);
+				}
+			}
+		}else{ // Atom
+			header('Content-type: application/atom+xml; charset=UTF-8');
+			$xml=new SimpleXMLElement('<feed xmlns="http://www.w3.org/2005/Atom"></feed>');
+			$root=$xml;
+			$root->addChild('title',(empty($data->output['blogItem']['title'])?$data->output['blogItem']['name']:$data->output['blogItem']['title']));
+			$root->addChild('subtitle',$data->output['blogItem']['description']);
+			$root->addChild('link')->addAttribute('href',$data->domainName.$data->linkRoot.'/blogs/'.$data->output['blogItem']['id']);
+			$root->addChild('updated',date(DATE_ATOM));
+			$root->addChild('id',bin2hex($data->output['blogItem']['id']));
+			$root->addChild('generator','SiteSense '.$data->version);
+			foreach($data->output['postsList'] as $post){
+				$item=$root->addChild('entry');
+				$item->addChild('title',$post['title']);
+				$item->addChild('summary',strip_tags($post['rawSummary']));
+				$item->addChild('link')->addAttribute('href',$data->domainName.$data->linkRoot.'/blogs/'.$data->output['blogItem']['id'].'/'.$post['shortName']);
+				$item->addChild('id',bin2hex($data->output['blogItem']['id']).'-'.bin2hex($post['id']));
+				$item->addChild('updated',date(DATE_ATOM,$post['postTime']));
+			}
+		}
 		if(!empty($data->output['blogItem']['webMaster'])){
-			$xml->channel->addChild('webMaster',$data->output['blogItem']['webMaster']);
+			$root->addChild('webMaster',$data->output['blogItem']['webMaster']);
 		}
 		if(!empty($data->output['blogItem']['managingEditor'])){
-			$xml->channel->addChild('managingEditor',$data->output['blogItem']['managingEditor']);
-		}
-		foreach($data->output['postsList'] as $post){
-			$item=$xml->channel->addChild('item');
-			$item->addChild('title',$post['title']);
-			$item->addChild('description',$post['rawSummary']);
-			$item->addChild('link',$data->domainName.$data->linkRoot.'/blogs/'.$data->output['blogItem']['id'].'/'.$post['shortName']);
-			$item->addChild('guid',bin2hex($post['id']));
-			$item->addChild('pubDate',date(DATE_RSS,$post['postTime']));
-			if(!empty($post['categoryId'])){
-				$item->addChild('category',$data->output['rssCategoryList'][$post['categoryId']]['name']);
-				$item->category->addAttribute('domain',$data->domainName.$data->linkRoot.'/blogs/'.$data->output['blogItem']['id'].'/categories/'.$data->output['rssCategoryList'][$post['categoryId']]['shortName']);
-			}
+			$root->addChild('managingEditor',$data->output['blogItem']['managingEditor']);
 		}
 		echo $xml->asXML();
 		die(); // done outputting xml
