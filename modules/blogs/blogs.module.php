@@ -76,7 +76,7 @@ function blogs_buildContent($data, $db) {
 	// If RSS Feed Skip All This
 	if ($data->action[2]==='rss') {
 		// Content Type
-		$data->httpHeaders[]='Content-Type: application/xml';
+		header('Content-type: application/rss+xml; charset=UTF-8');
 		// Get Blog Info
 		$statement=$db->prepare('getBlogById', 'blogs');
 		$statement->execute(array(
@@ -96,29 +96,33 @@ function blogs_buildContent($data, $db) {
 		foreach ($catList as $catItem) {
 			$data->output['rssCategoryList'][$catItem['id']]=$catItem;
 		}
-		// Get Name Of Blog Owner
-		if ($data->output['blogItem']['owner'] != '0') {
-			$statement=$db->prepare('getById', 'users');
-			$statement->execute(array(
-					':id' => $blogItem['owner']
-				));
-			$data->output['blogOwnerItem']=$statement->fetch();
+		$xml=new SimpleXMLElement('<rss version="2.0"></rss>');
+		$xml->addChild('channel');
+		$xml->channel->addChild('title',(empty($data->output['blogItem']['title'])?$data->output['blogItem']['name']:$data->output['blogItem']['title']));
+		$xml->channel->addChild('description',$data->output['blogItem']['description']);
+		$xml->channel->addChild('link',$data->domainName.$data->linkRoot.'/blogs/'.$data->output['blogItem']['id']);
+		$xml->channel->addChild('pubDate',date(DATE_RSS));
+		$xml->channel->addChild('generator','SiteSense '.$data->version);
+		if(!empty($data->output['blogItem']['webMaster'])){
+			$xml->channel->addChild('webMaster',$data->output['blogItem']['webMaster']);
 		}
-		// Get Total Authors
-		$statement=$db->prepare('getUniqueAuthorCountByBlog', 'blogs');
-		$statement->execute(array(
-				':blogId' => $data->action[1]
-			));
-		$data->output['blogItem']['authorCount']=$statement->fetch();
-		if ($data->output['blogItem']['authorCount'] > 1) {
-			// Get A List Of All Users And Resort Using The ID As The Key
-			$statement=$db->prepare("getAllUsers", 'users');
-			$statement->execute();
-			$result=$statement->fetchAll();
-			foreach ($result as $index => $userItem) {
-				$data->output['blogItem']['userList'][$userItem['id']]=$userItem;
+		if(!empty($data->output['blogItem']['managingEditor'])){
+			$xml->channel->addChild('managingEditor',$data->output['blogItem']['managingEditor']);
+		}
+		foreach($data->output['postsList'] as $post){
+			$item=$xml->channel->addChild('item');
+			$item->addChild('title',$post['title']);
+			$item->addChild('description',$post['rawSummary']);
+			$item->addChild('link',$data->domainName.$data->linkRoot.'/blogs/'.$data->output['blogItem']['id'].'/'.$post['shortName']);
+			$item->addChild('guid',bin2hex($post['id']));
+			$item->addChild('pubDate',date(DATE_RSS,$post['postTime']));
+			if(!empty($post['categoryId'])){
+				$item->addChild('category',$data->output['rssCategoryList'][$post['categoryId']]['name']);
+				$item->category->addAttribute('domain',$data->domainName.$data->linkRoot.'/blogs/'.$data->output['blogItem']['id'].'/categories/'.$data->output['rssCategoryList'][$post['categoryId']]['shortName']);
 			}
 		}
+		echo $xml->asXML();
+		die(); // done outputting xml
 	} else {
 		// If No Page Set, Then Start At 0
 		if (($data->action[2]==='tags'||$data->action[2]==='categories')&&$data->action[4]===false) {
@@ -199,15 +203,10 @@ function blogs_buildContent($data, $db) {
 	}
 }
 function blogs_content($data) {
-	if ($data->action[2]==='rss') {
-		theme_blogRSSFeed($data);
-		die;
-	} else {
-		if(isset($data->output['blogInfo']['numberOfPosts']) && $data->output['blogInfo']['numberOfPosts'] > $data->output['blogInfo']['numberPerPage']){
-			$pagination = true;
-		}else{
-			$pagination = false;
-		}
-		blogs_common_pageContent($data, false, $pagination, $data->output['summarize']);
+	if(isset($data->output['blogInfo']['numberOfPosts']) && $data->output['blogInfo']['numberOfPosts'] > $data->output['blogInfo']['numberPerPage']){
+		$pagination = true;
+	}else{
+		$pagination = false;
 	}
+	blogs_common_pageContent($data, false, $pagination, $data->output['summarize']);
 }
